@@ -446,18 +446,18 @@ All messages are JSON. All UUIDs are v4 (RFC 4122). All timestamps are ISO 8601 
 
 | Field | Type | Required | Description |
 |---|---|---|---|
-| `event_type` | `string` | ✅ | Always `"ProcessPayment"`. Used for message routing and deserialization. |
-| `version` | `string` | ✅ | Schema version for forward compatibility. Consumer must reject unknown versions. |
-| `transaction_id` | `string (UUID v4)` | ✅ | Globally unique saga identifier. Used as SQS FIFO `MessageGroupId` to ensure ordering within a saga. |
-| `idempotency_key` | `string (UUID v4)` | ✅ | Used as SQS FIFO `MessageDeduplicationId` AND as the PK in the `idempotency_store` table. Guarantees exactly-once processing. |
-| `user_id` | `string (UUID v4)` | ✅ | The purchaser. Used to look up wallet balance in PostgreSQL. |
-| `event_id` | `string (UUID v4)` | ✅ | The flash sale event. Used to look up ticket inventory in DynamoDB. |
-| `tier_name` | `string` | ✅ | Ticket tier (e.g., `"VIP"`, `"GENERAL"`, `"BALCONY"`). |
-| `quantity` | `integer (>0)` | ✅ | Number of tickets requested. Must be ≤ `max_per_user` for the tier. |
-| `amount_cents` | `integer (>0)` | ✅ | Total charge amount in smallest currency unit. Pre-calculated by the Saga Initiator. |
-| `currency` | `string (ISO 4217)` | ✅ | Three-letter currency code. |
-| `timestamp` | `string (ISO 8601)` | ✅ | Time the saga was initiated. Used for SLA monitoring and timeout detection. |
-| `metadata` | `object` | ❌ | Optional context for auditing and fraud detection. Never used for business logic. |
+| `event_type` | `string` | YES | Always `"ProcessPayment"`. Used for message routing and deserialization. |
+| `version` | `string` | YES | Schema version for forward compatibility. Consumer must reject unknown versions. |
+| `transaction_id` | `string (UUID v4)` | YES | Globally unique saga identifier. Used as SQS FIFO `MessageGroupId` to ensure ordering within a saga. |
+| `idempotency_key` | `string (UUID v4)` | YES | Used as SQS FIFO `MessageDeduplicationId` AND as the PK in the `idempotency_store` table. Guarantees exactly-once processing. |
+| `user_id` | `string (UUID v4)` | YES | The purchaser. Used to look up wallet balance in PostgreSQL. |
+| `event_id` | `string (UUID v4)` | YES | The flash sale event. Used to look up ticket inventory in DynamoDB. |
+| `tier_name` | `string` | YES | Ticket tier (e.g., `"VIP"`, `"GENERAL"`, `"BALCONY"`). |
+| `quantity` | `integer (>0)` | YES | Number of tickets requested. Must be ≤ `max_per_user` for the tier. |
+| `amount_cents` | `integer (>0)` | YES | Total charge amount in smallest currency unit. Pre-calculated by the Saga Initiator. |
+| `currency` | `string (ISO 4217)` | YES | Three-letter currency code. |
+| `timestamp` | `string (ISO 8601)` | YES | Time the saga was initiated. Used for SLA monitoring and timeout detection. |
+| `metadata` | `object` | NO | Optional context for auditing and fraud detection. Never used for business logic. |
 
 ---
 
@@ -487,19 +487,19 @@ All messages are JSON. All UUIDs are v4 (RFC 4122). All timestamps are ISO 8601 
 
 | Field | Type | Required | Description |
 |---|---|---|---|
-| `event_type` | `string` | ✅ | Always `"PaymentSuccess"`. |
-| `version` | `string` | ✅ | Schema version. |
-| `transaction_id` | `string (UUID v4)` | ✅ | Same saga ID from `ProcessPayment`. Correlation key. |
-| `idempotency_key` | `string (UUID v4)` | ✅ | **New** UUID for this leg of the saga. Different from the payment idempotency key. Used by Inventory Service for its own deduplication. |
-| `user_id` | `string (UUID v4)` | ✅ | Passed through for reservation record. |
-| `event_id` | `string (UUID v4)` | ✅ | Passed through for DynamoDB lookup. |
-| `tier_name` | `string` | ✅ | Ticket tier for DynamoDB conditional write. |
-| `quantity` | `integer (>0)` | ✅ | Tickets to reserve. |
-| `amount_cents` | `integer (>0)` | ✅ | Passed through for reservation record audit. |
-| `currency` | `string` | ✅ | Passed through. |
-| `payment_reference` | `string (UUID)` | ✅ | The `ledger_id` from the `payment_ledger` row. Links the reservation back to the financial transaction. |
-| `charged_at` | `string (ISO 8601)` | ✅ | Exact timestamp the charge was recorded in PostgreSQL. |
-| `timestamp` | `string (ISO 8601)` | ✅ | Time this event was emitted. |
+| `event_type` | `string` | YES | Always `"PaymentSuccess"`. |
+| `version` | `string` | YES | Schema version. |
+| `transaction_id` | `string (UUID v4)` | YES | Same saga ID from `ProcessPayment`. Correlation key. |
+| `idempotency_key` | `string (UUID v4)` | YES | **New** UUID for this leg of the saga. Different from the payment idempotency key. Used by Inventory Service for its own deduplication. |
+| `user_id` | `string (UUID v4)` | YES | Passed through for reservation record. |
+| `event_id` | `string (UUID v4)` | YES | Passed through for DynamoDB lookup. |
+| `tier_name` | `string` | YES | Ticket tier for DynamoDB conditional write. |
+| `quantity` | `integer (>0)` | YES | Tickets to reserve. |
+| `amount_cents` | `integer (>0)` | YES | Passed through for reservation record audit. |
+| `currency` | `string` | YES | Passed through. |
+| `payment_reference` | `string (UUID)` | YES | The `ledger_id` from the `payment_ledger` row. Links the reservation back to the financial transaction. |
+| `charged_at` | `string (ISO 8601)` | YES | Exact timestamp the charge was recorded in PostgreSQL. |
+| `timestamp` | `string (ISO 8601)` | YES | Time this event was emitted. |
 
 ---
 
@@ -2229,7 +2229,7 @@ class FlashSaleUser(HttpUser):
 
     @task(weight=10)
     def buy_ticket(self):
-        """90% of traffic: Purchase attempt."""
+        """90% of traffic: Purchase attempt."""Looking at the progression in the screenshots, it is clear you systematically knocked out those initial failures in the Linting, Terraform validation, and Payment unit tests. Having all 8 checks passing cleanly on the main branch is a great milestone for the stability of your distributed architecture
         payload = {
             "user_id": str(uuid4()),         # Each request is a unique user
             "event_id": FLASH_SALE_EVENT_ID,  # Fixed event
@@ -2599,13 +2599,13 @@ Internal Logic:
 ║           FLASH SALE RECONCILIATION REPORT — 2026-06-20 00:15:00     ║
 ║           Event: FLASH-2026-SUMMER | Tier: VIP                       ║
 ╠═══════════════════════════════════════════════════════════════════════╣
-║ INVARIANT 1: ZERO-SUM (No orphaned charges)          ✅ PASS         ║
-║ INVARIANT 2: NO DOUBLE CHARGES                       ✅ PASS         ║
-║ INVARIANT 3: NO DOUBLE REFUNDS                       ✅ PASS         ║
-║ INVARIANT 4: REFUND ≤ CHARGE                         ✅ PASS         ║
-║ INVARIANT 5: INVENTORY CONSERVATION                  ✅ PASS         ║
+║ INVARIANT 1: ZERO-SUM (No orphaned charges)             PASS         ║
+║ INVARIANT 2: NO DOUBLE CHARGES                          PASS         ║
+║ INVARIANT 3: NO DOUBLE REFUNDS                          PASS         ║
+║ INVARIANT 4: REFUND ≤ CHARGE                            PASS         ║
+║ INVARIANT 5: INVENTORY CONSERVATION                     PASS         ║
 ║   → total_qty: 100 | available: 0 | reserved: 100                   ║
-║ INVARIANT 6: WALLET CONSISTENCY                      ✅ PASS         ║
+║ INVARIANT 6: WALLET CONSISTENCY                         PASS         ║
 ╠═══════════════════════════════════════════════════════════════════════╣
 ║ SUMMARY:                                                             ║
 ║   Total Charges:       100                                           ║
@@ -2616,7 +2616,7 @@ Internal Logic:
 ║   Violations:            0                                           ║
 ║   Execution Time:      234ms                                         ║
 ╠═══════════════════════════════════════════════════════════════════════╣
-║ VERDICT: ✅ ALL INVARIANTS HOLD — SYSTEM IS FINANCIALLY CONSISTENT   ║
+║ VERDICT: ALL INVARIANTS HOLD — SYSTEM IS FINANCIALLY CONSISTENT   ║
 ╚═══════════════════════════════════════════════════════════════════════╝
 ```
 
@@ -2765,16 +2765,16 @@ Enriched Log Entry (emitted on final failure before DLQ):
 
 | Gate | Tool | Pass Criteria | Blocks PR? |
 |---|---|---|---|
-| **Lint** | `ruff check .` | 0 violations (config in `pyproject.toml`: line-length=120, select=["E","F","W","I","N","UP","B","A","SIM"]) | ✅ Yes |
-| **Format** | `ruff format --check .` | All files formatted | ✅ Yes |
-| **Type Check** | `mypy --strict` per service | 0 type errors | ✅ Yes |
-| **Unit Tests** | `pytest --cov --cov-fail-under=90` | All pass, ≥90% coverage on changed files | ✅ Yes |
-| **Contract Tests** | `pytest tests/contract/` | All snapshot validations pass, schemathesis finds 0 server errors | ✅ Yes |
-| **Integration Tests** | `pytest tests/integration/ --timeout=120` | All pass (requires Docker-in-Docker in CI runner) | ✅ Yes |
-| **Reconciliation** | `python scripts/reconcile.py --fail-on-violation` | All 6 invariants pass | ✅ Yes |
-| **Terraform Plan** | `terraform plan -detailed-exitcode` | Exit code 0 (no changes) or 2 (changes present, but valid). Exit code 1 = syntax error → block. | ✅ Yes (on exit code 1) |
-| **Security Scan** | `bandit -r .` (Python SAST) | 0 high-severity findings | ✅ Yes |
-| **Dependency Audit** | `pip-audit` | 0 known CVEs in dependencies | ⚠️ Warning (non-blocking, but flagged) |
+| **Lint** | `ruff check .` | 0 violations (config in `pyproject.toml`: line-length=120, select=["E","F","W","I","N","UP","B","A","SIM"]) | Yes |
+| **Format** | `ruff format --check .` | All files formatted | Yes |
+| **Type Check** | `mypy --strict` per service | 0 type errors | Yes |
+| **Unit Tests** | `pytest --cov --cov-fail-under=90` | All pass, ≥90% coverage on changed files | Yes |
+| **Contract Tests** | `pytest tests/contract/` | All snapshot validations pass, schemathesis finds 0 server errors | Yes |
+| **Integration Tests** | `pytest tests/integration/ --timeout=120` | All pass (requires Docker-in-Docker in CI runner) | Yes |
+| **Reconciliation** | `python scripts/reconcile.py --fail-on-violation` | All 6 invariants pass | Yes |
+| **Terraform Plan** | `terraform plan -detailed-exitcode` | Exit code 0 (no changes) or 2 (changes present, but valid). Exit code 1 = syntax error → block. | Yes (on exit code 1) |
+| **Security Scan** | `bandit -r .` (Python SAST) | 0 high-severity findings | Yes |
+| **Dependency Audit** | `pip-audit` | 0 known CVEs in dependencies |  Warning (non-blocking, but flagged) |
 
 ### 6.7.3 GitHub Actions Workflow Structure
 
@@ -2802,8 +2802,6 @@ Enriched Log Entry (emitted on final failure before DLQ):
       └── smoke-test-prod       (runs 5 real sagas + reconciliation against prod)
 ```
 
-> **📝 Resume Bullet Point:**  
-> *Designed a 9-gate CI/CD pipeline (lint, type check, unit, contract, integration, financial reconciliation, security scan, dependency audit, Terraform plan) with < 5 minute total runtime and automated post-deploy smoke tests, enforcing 90%+ code coverage and zero financial invariant violations as merge requirements.*
 
 ---
 
