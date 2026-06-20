@@ -9,14 +9,15 @@ from payment.db.connection import get_connection, release_connection
 from payment.processor import process_payment
 from payment.rollback import process_rollback
 
-settings = get_settings()
-logger = get_logger("payment-processor", log_level=settings.LOG_LEVEL)
+settings = None
 
 
 def lambda_handler(event: dict, context) -> dict:
+    s = settings if settings is not None else get_settings()
+    logger = get_logger("payment-processor", log_level=s.LOG_LEVEL)
     batch_item_failures = []
 
-    db = get_connection(settings.DATABASE_URL)
+    db = get_connection(s.DATABASE_URL)
 
     try:
         for record in event.get("Records", []):
@@ -42,15 +43,15 @@ def lambda_handler(event: dict, context) -> dict:
                     "payment-processor",
                     transaction_id=str(message.transaction_id),
                     aws_request_id=aws_request_id,
-                    log_level=settings.LOG_LEVEL,
+                    log_level=s.LOG_LEVEL,
                 )
 
                 if isinstance(message, ProcessPaymentEvent):
                     result = process_payment(
                         message=message,
                         db=db,
-                        inventory_queue_url=settings.INVENTORY_QUEUE_URL,
-                        status_queue_url=settings.STATUS_QUEUE_URL,
+                        inventory_queue_url=s.INVENTORY_QUEUE_URL,
+                        status_queue_url=s.STATUS_QUEUE_URL,
                         sqs_client=None,
                     )
                     if not result.success:
@@ -63,7 +64,7 @@ def lambda_handler(event: dict, context) -> dict:
                     result = process_rollback(
                         message=message,
                         db=db,
-                        status_queue_url=settings.STATUS_QUEUE_URL,
+                        status_queue_url=s.STATUS_QUEUE_URL,
                         sqs_client=None,
                     )
                     if not result.success:
@@ -100,6 +101,6 @@ def lambda_handler(event: dict, context) -> dict:
                 batch_item_failures.append({"itemIdentifier": message_id})
 
     finally:
-        release_connection(db, settings.DATABASE_URL)
+        release_connection(db, s.DATABASE_URL)
 
     return {"batchItemFailures": batch_item_failures}

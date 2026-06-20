@@ -8,13 +8,19 @@ from shared.logger import get_logger
 from inventory.db.client import DynamoDBClient
 from inventory.reserver import reserve_ticket
 
-settings = get_settings()
-logger = get_logger("inventory-processor", log_level=settings.LOG_LEVEL)
-
-dynamodb_client = DynamoDBClient(table_name=settings.DYNAMODB_TABLE_NAME)
+settings = None
+dynamodb_client = None
 
 
 def lambda_handler(event: dict, context) -> dict:
+    global dynamodb_client
+
+    s = settings if settings is not None else get_settings()
+    logger = get_logger("inventory-processor", log_level=s.LOG_LEVEL)
+
+    if dynamodb_client is None:
+        dynamodb_client = DynamoDBClient(table_name=s.DYNAMODB_TABLE_NAME)
+
     batch_item_failures = []
 
     for record in event.get("Records", []):
@@ -30,14 +36,14 @@ def lambda_handler(event: dict, context) -> dict:
                 "inventory-processor",
                 transaction_id=str(message.transaction_id),
                 aws_request_id=aws_request_id,
-                log_level=settings.LOG_LEVEL,
+                log_level=s.LOG_LEVEL,
             )
 
             result = reserve_ticket(
                 message=message,
                 db=dynamodb_client,
-                status_queue_url=settings.STATUS_QUEUE_URL,
-                rollback_queue_url=settings.ROLLBACK_QUEUE_URL,
+                status_queue_url=s.STATUS_QUEUE_URL,
+                rollback_queue_url=s.ROLLBACK_QUEUE_URL,
             )
 
             if not result.success:
