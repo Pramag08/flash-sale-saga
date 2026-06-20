@@ -19,7 +19,6 @@ pythonpath = ["."]
 line-length = 120
 target-version = "py312"
 exclude = [".venv", "frontend", ".git", "__pycache__", "node_modules"]
-
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "N", "UP", "B", "A", "SIM"]
 ignore = ["A003"]
