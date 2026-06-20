@@ -36,15 +36,15 @@ resource "aws_lambda_function" "saga_initiator" {
 }
 
 resource "aws_lambda_function" "payment_processor" {
-  function_name                 = "${local.prefix}-payment-processor"
-  role                          = var.payment_processor_role_arn
-  handler                       = "handler.lambda_handler"
-  runtime                       = "python3.12"
-  memory_size                   = 512
-  timeout                       = 30
+  function_name                  = "${local.prefix}-payment-processor"
+  role                           = var.payment_processor_role_arn
+  handler                        = "handler.lambda_handler"
+  runtime                        = "python3.12"
+  memory_size                    = 512
+  timeout                        = 30
   reserved_concurrent_executions = 100
-  filename                      = data.archive_file.placeholder.output_path
-  source_code_hash              = data.archive_file.placeholder.output_base64sha256
+  filename                       = data.archive_file.placeholder.output_path
+  source_code_hash               = data.archive_file.placeholder.output_base64sha256
 
   environment {
     variables = {
@@ -60,15 +60,15 @@ resource "aws_lambda_function" "payment_processor" {
 }
 
 resource "aws_lambda_function" "inventory_processor" {
-  function_name                 = "${local.prefix}-inventory-processor"
-  role                          = var.inventory_processor_role_arn
-  handler                       = "handler.lambda_handler"
-  runtime                       = "python3.12"
-  memory_size                   = 256
-  timeout                       = 30
+  function_name                  = "${local.prefix}-inventory-processor"
+  role                           = var.inventory_processor_role_arn
+  handler                        = "handler.lambda_handler"
+  runtime                        = "python3.12"
+  memory_size                    = 256
+  timeout                        = 30
   reserved_concurrent_executions = 100
-  filename                      = data.archive_file.placeholder.output_path
-  source_code_hash              = data.archive_file.placeholder.output_base64sha256
+  filename                       = data.archive_file.placeholder.output_path
+  source_code_hash               = data.archive_file.placeholder.output_base64sha256
 
   environment {
     variables = {
@@ -84,15 +84,15 @@ resource "aws_lambda_function" "inventory_processor" {
 }
 
 resource "aws_lambda_function" "payment_rollback" {
-  function_name                 = "${local.prefix}-payment-rollback"
-  role                          = var.payment_rollback_role_arn
-  handler                       = "handler.lambda_handler"
-  runtime                       = "python3.12"
-  memory_size                   = 512
-  timeout                       = 60
+  function_name                  = "${local.prefix}-payment-rollback"
+  role                           = var.payment_rollback_role_arn
+  handler                        = "handler.lambda_handler"
+  runtime                        = "python3.12"
+  memory_size                    = 512
+  timeout                        = 60
   reserved_concurrent_executions = 50
-  filename                      = data.archive_file.placeholder.output_path
-  source_code_hash              = data.archive_file.placeholder.output_base64sha256
+  filename                       = data.archive_file.placeholder.output_path
+  source_code_hash               = data.archive_file.placeholder.output_base64sha256
 
   environment {
     variables = {
@@ -128,15 +128,15 @@ resource "aws_lambda_function" "saga_status_notifier" {
 }
 
 resource "aws_lambda_function" "reservation_cleanup" {
-  function_name                 = "${local.prefix}-reservation-cleanup"
-  role                          = var.reservation_cleanup_role_arn
-  handler                       = "handler.lambda_handler"
-  runtime                       = "python3.12"
-  memory_size                   = 128
-  timeout                       = 30
+  function_name                  = "${local.prefix}-reservation-cleanup"
+  role                           = var.reservation_cleanup_role_arn
+  handler                        = "handler.lambda_handler"
+  runtime                        = "python3.12"
+  memory_size                    = 128
+  timeout                        = 30
   reserved_concurrent_executions = 10
-  filename                      = data.archive_file.placeholder.output_path
-  source_code_hash              = data.archive_file.placeholder.output_base64sha256
+  filename                       = data.archive_file.placeholder.output_path
+  source_code_hash               = data.archive_file.placeholder.output_base64sha256
 
   environment {
     variables = {
