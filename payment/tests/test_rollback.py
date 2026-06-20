@@ -137,11 +137,11 @@ class TestProcessRollback:
         stale_time = _utc_now() - timedelta(minutes=10)
 
         cursor.fetchone.side_effect = [
-            None,                              # INSERT_IDEMPOTENCY (conflict)
+            None,  # INSERT_IDEMPOTENCY (conflict)
             ("PROCESSING", None, stale_time),  # CHECK_IDEMPOTENCY
             (str(original_charge_id), 4999, user_id, "SUCCESS"),  # GET_LEDGER_ENTRY
-            (10000,),                          # CREDIT_WALLET
-            (refund_ledger_id,),               # INSERT_LEDGER_REFUND
+            (10000,),  # CREDIT_WALLET
+            (refund_ledger_id,),  # INSERT_LEDGER_REFUND
         ]
 
         result = process_rollback(
@@ -183,11 +183,11 @@ class TestProcessRollback:
         user_id = str(uuid.uuid4())
 
         cursor.fetchone.side_effect = [
-            None,                          # INSERT_IDEMPOTENCY (conflict)
+            None,  # INSERT_IDEMPOTENCY (conflict)
             ("FAILED", None, _utc_now()),  # CHECK_IDEMPOTENCY
             (str(original_charge_id), 4999, user_id, "SUCCESS"),  # GET_LEDGER_ENTRY
-            (10000,),                      # CREDIT_WALLET
-            (refund_ledger_id,),           # INSERT_LEDGER_REFUND
+            (10000,),  # CREDIT_WALLET
+            (refund_ledger_id,),  # INSERT_LEDGER_REFUND
         ]
 
         result = process_rollback(

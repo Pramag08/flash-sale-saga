@@ -143,9 +143,7 @@ def saga_timeout_handler(event: dict, context: Any) -> dict:
                 continue
 
             try:
-                payment_success_event = _reconstruct_payment_success_event(
-                    response_payload, transaction_id
-                )
+                payment_success_event = _reconstruct_payment_success_event(response_payload, transaction_id)
                 dedup_id = f"timeout-recovery-{uuid4()}"
                 send_fifo_message(
                     queue_url=inventory_queue_url,

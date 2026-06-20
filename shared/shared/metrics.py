@@ -32,9 +32,7 @@ def emit_metric(
     }
 
     if dimensions:
-        metric_data["Dimensions"] = [
-            {"Name": k, "Value": v} for k, v in dimensions.items()
-        ]
+        metric_data["Dimensions"] = [{"Name": k, "Value": v} for k, v in dimensions.items()]
 
     should_flush = False
     with _buffer_lock:

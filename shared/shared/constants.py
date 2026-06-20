@@ -8,10 +8,12 @@ class EventType(StrEnum):
     INVENTORY_FAILED = "InventoryFailed"
     SAGA_COMPLETED = "SagaCompleted"
 
+
 class SagaOutcome(StrEnum):
     SUCCESS = "SUCCESS"
     ROLLED_BACK = "ROLLED_BACK"
     FAILED_PERMANENTLY = "FAILED_PERMANENTLY"
+
 
 class PaymentOperation(StrEnum):
     CHARGE = "CHARGE"

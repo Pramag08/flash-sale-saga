@@ -76,9 +76,7 @@ class TestProcessPayment:
         assert result.ledger_id == ledger_id
         assert result.error is None
 
-        db.set_isolation_level.assert_called_once_with(
-            psycopg2.extensions.ISOLATION_LEVEL_SERIALIZABLE
-        )
+        db.set_isolation_level.assert_called_once_with(psycopg2.extensions.ISOLATION_LEVEL_SERIALIZABLE)
         assert db.commit.call_count >= 2
         mock_sqs_client.send_message.assert_called_once()
 
@@ -141,10 +139,10 @@ class TestProcessPayment:
         stale_time = _utc_now() - timedelta(minutes=10)
 
         cursor.fetchone.side_effect = [
-            None,                              # INSERT_IDEMPOTENCY (conflict)
+            None,  # INSERT_IDEMPOTENCY (conflict)
             ("PROCESSING", None, stale_time),  # CHECK_IDEMPOTENCY
-            (4999,),                           # DEDUCT_WALLET
-            (ledger_id,),                      # INSERT_LEDGER_CHARGE
+            (4999,),  # DEDUCT_WALLET
+            (ledger_id,),  # INSERT_LEDGER_CHARGE
         ]
 
         result = process_payment(
@@ -186,10 +184,10 @@ class TestProcessPayment:
         ledger_id = uuid.uuid4()
 
         cursor.fetchone.side_effect = [
-            None,                          # INSERT_IDEMPOTENCY (conflict)
+            None,  # INSERT_IDEMPOTENCY (conflict)
             ("FAILED", None, _utc_now()),  # CHECK_IDEMPOTENCY
-            (4999,),                       # DEDUCT_WALLET
-            (ledger_id,),                  # INSERT_LEDGER_CHARGE
+            (4999,),  # DEDUCT_WALLET
+            (ledger_id,),  # INSERT_LEDGER_CHARGE
         ]
 
         result = process_payment(

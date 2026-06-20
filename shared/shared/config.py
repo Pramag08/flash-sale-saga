@@ -15,27 +15,17 @@ class Settings(BaseSettings):
 
     AWS_REGION: str = Field(default="us-east-1", description="AWS region for all services")
 
-    PAYMENT_QUEUE_URL: str = Field(
-        description="SQS FIFO queue URL for payment processing"
-    )
-    INVENTORY_QUEUE_URL: str = Field(
-        description="SQS FIFO queue URL for inventory processing"
-    )
-    ROLLBACK_QUEUE_URL: str = Field(
-        description="SQS FIFO queue URL for payment rollback"
-    )
-    STATUS_QUEUE_URL: str = Field(
-        description="SQS FIFO queue URL for saga status notifications"
-    )
+    PAYMENT_QUEUE_URL: str = Field(description="SQS FIFO queue URL for payment processing")
+    INVENTORY_QUEUE_URL: str = Field(description="SQS FIFO queue URL for inventory processing")
+    ROLLBACK_QUEUE_URL: str = Field(description="SQS FIFO queue URL for payment rollback")
+    STATUS_QUEUE_URL: str = Field(description="SQS FIFO queue URL for saga status notifications")
 
     DYNAMODB_TABLE_NAME: str = Field(
         default="FlashSaleInventory",
         description="DynamoDB table name for inventory",
     )
 
-    DATABASE_URL: str = Field(
-        description="PostgreSQL connection string for payment service"
-    )
+    DATABASE_URL: str = Field(description="PostgreSQL connection string for payment service")
 
     LOG_LEVEL: str = Field(
         default="INFO",
