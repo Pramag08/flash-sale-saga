@@ -1,6 +1,6 @@
 # Flash Sale Saga
 
-**Enterprise-Grade Distributed Ticketing Platform** — a serverless, event-driven saga implementation that guarantees exactly-once payment processing, zero overselling, and zero double charges under flash-sale concurrency.
+**Distributed Ticketing Platform** — a serverless, event-driven saga implementation that guarantees exactly-once payment processing, zero overselling, and zero double charges under flash-sale concurrency.
 Made by Pramag Basantia.
 ---
 
