@@ -2942,26 +2942,5 @@ flash-sale-saga/
 
 ---
 
-## 6.10 Resume Bullet Points — Consolidated
-
-> [!TIP]
-> These are ready-to-use, metrics-backed bullet points for a Staff/Principal Engineer resume. Each one maps to a concrete, demonstrable system capability.
-
-| # | Domain | Bullet Point |
-|---|---|---|
-| 1 | **Testing** | Engineered a 90%+ code coverage test suite across 3 microservices using `pytest`, `moto`, and transactional fixtures, validating idempotency, conditional writes, and compensating transaction logic in isolation. |
-| 2 | **Contract Testing** | Implemented contract testing across 4 event schemas and 3 API endpoints using Pydantic snapshot verification and `schemathesis`, achieving zero schema-drift incidents across the saga's choreography boundary. |
-| 3 | **Integration Testing** | Built an end-to-end integration test suite using `testcontainers` and LocalStack that validated the full saga lifecycle (charge → reserve → confirm OR charge → fail → refund) against real PostgreSQL 16 and DynamoDB instances, catching 3 race conditions pre-production. |
-| 4 | **Chaos Engineering** | Designed and executed 5 chaos engineering experiments (Lambda crash-after-commit, DB outage, duplicate delivery, thundering herd) validating saga self-healing, idempotency, and zero-overselling invariants under fault injection with a custom ChaosMiddleware framework. |
-| 5 | **Load Testing** | Executed a 1,000-concurrent-user flash sale load test with Locust, proving zero overselling (100/100 tickets allocated precisely) and zero double-charges via automated post-test financial reconciliation queries across PostgreSQL and DynamoDB. |
-| 6 | **Observability** | Architected a full-stack observability pipeline using `structlog` (structured JSON logging), CloudWatch Logs Insights (5 prebuilt operational queries), a 6-widget CloudWatch Dashboard ("Saga Control Plane"), and AWS X-Ray distributed tracing with auto-instrumented SQS→Lambda→DynamoDB/PostgreSQL subsegments. |
-| 7 | **Financial Integrity** | Built a 6-invariant financial reconciliation engine that cross-references PostgreSQL ledger entries against DynamoDB reservations post-load-test, proving zero-sum consistency (no orphaned charges, no double-charges, no overselling) across 100K+ transactions in < 250ms execution time. |
-| 8 | **DLQ Operations** | Implemented a tiered DLQ alerting system (P1/P2/P3) with automated redrive tooling and enriched failure logging, achieving < 15-minute MTTR for critical refund-path failures and zero-data-loss guarantee across all saga compensation flows. |
-| 9 | **CI/CD** | Designed a 9-gate CI/CD pipeline (lint, type check, unit, contract, integration, financial reconciliation, security scan, dependency audit, Terraform plan) with < 5 minute total runtime and automated post-deploy smoke tests, enforcing 90%+ code coverage and zero financial invariant violations as merge requirements. |
-| 10 | **Self-Healing** | Engineered a self-healing saga timeout monitor (CloudWatch-triggered Lambda, 5-min cadence) that autonomously detects and recovers orphaned distributed transactions by re-emitting stranded events, reducing manual incident intervention by 100% for the most common saga failure mode. |
-
----
-
 **END OF DOCUMENT**
 
-*This document must be treated as the authoritative reference during implementation. No code should be written that contradicts the schemas, event contracts, or function signatures defined herein.*
