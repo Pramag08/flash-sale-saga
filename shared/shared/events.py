@@ -92,13 +92,9 @@ class SagaCompletedEvent(BaseModel):
     @model_validator(mode="after")
     def failure_reason_consistency(self) -> "SagaCompletedEvent":
         if self.outcome != SagaOutcome.SUCCESS and self.failure_reason is None:
-            raise ValueError(
-                "failure_reason must be provided when outcome is not SUCCESS"
-            )
+            raise ValueError("failure_reason must be provided when outcome is not SUCCESS")
         if self.outcome == SagaOutcome.SUCCESS and self.failure_reason is not None:
-            raise ValueError(
-                "failure_reason must be null when outcome is SUCCESS"
-            )
+            raise ValueError("failure_reason must be null when outcome is SUCCESS")
         return self
 
 

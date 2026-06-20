@@ -26,9 +26,7 @@ async def get_saga_status(
 ):
     try:
         response = await asyncio.to_thread(
-            lambda: table.get_item(
-                Key={"PK": f"TXN#{transaction_id}", "SK": "RESERVATION"}
-            )
+            lambda: table.get_item(Key={"PK": f"TXN#{transaction_id}", "SK": "RESERVATION"})
         )
     except ClientError as e:
         logger.error(
@@ -54,9 +52,7 @@ async def get_saga_status(
     if reservation_status == "RESERVED" and reserved_at:
         try:
             reserved_dt = datetime.fromisoformat(reserved_at)
-            age_minutes = (
-                datetime.now(UTC) - reserved_dt
-            ).total_seconds() / 60
+            age_minutes = (datetime.now(UTC) - reserved_dt).total_seconds() / 60
             if age_minutes > TIMEOUT_THRESHOLD_MINUTES:
                 reservation_status = "TIMED_OUT"
         except (ValueError, TypeError):

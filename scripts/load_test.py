@@ -34,9 +34,7 @@ def on_test_start(environment, **kwargs):
 @events.test_stop.add_listener
 def on_test_stop(environment, **kwargs):
     if COLLISION_COUNT < MAX_COLLISIONS:
-        environment.runner.log(
-            f"Idempotency collision test: {COLLISION_COUNT}/{MAX_COLLISIONS} collisions sent"
-        )
+        environment.runner.log(f"Idempotency collision test: {COLLISION_COUNT}/{MAX_COLLISIONS} collisions sent")
 
 
 class FlashSaleUser(HttpUser):
@@ -51,9 +49,7 @@ class FlashSaleUser(HttpUser):
             "tier_name": random.choice(TIERS),
             "quantity": 1,
         }
-        with self.client.post(
-            "/buy-ticket", json=payload, catch_response=True
-        ) as resp:
+        with self.client.post("/buy-ticket", json=payload, catch_response=True) as resp:
             if resp.status_code == 202:
                 resp.success()
                 self.transaction_id = resp.json()["transaction_id"]
@@ -70,9 +66,7 @@ class FlashSaleUser(HttpUser):
             "tier_name": random.choice(TIERS),
             "quantity": random_quantity(),
         }
-        with self.client.post(
-            "/buy-ticket", json=payload, catch_response=True
-        ) as resp:
+        with self.client.post("/buy-ticket", json=payload, catch_response=True) as resp:
             if resp.status_code == 202:
                 resp.success()
                 self.transaction_id = resp.json()["transaction_id"]
@@ -99,18 +93,14 @@ class FlashSaleUser(HttpUser):
             "quantity": 1,
         }
         name = "buy_ticket_idempotency_collision"
-        with self.client.post(
-            "/buy-ticket", json=payload, catch_response=True, name=name
-        ) as resp:
+        with self.client.post("/buy-ticket", json=payload, catch_response=True, name=name) as resp:
             if resp.status_code in (202, 409):
                 resp.success()
                 if resp.status_code == 202:
                     self.transaction_id = resp.json()["transaction_id"]
                 COLLISION_COUNT += 1
             else:
-                resp.failure(
-                    f"Idempotency collision unexpected status {resp.status_code}: {resp.text}"
-                )
+                resp.failure(f"Idempotency collision unexpected status {resp.status_code}: {resp.text}")
 
     @task(weight=3)
     def buy_ticket_sold_out(self):
@@ -121,15 +111,11 @@ class FlashSaleUser(HttpUser):
             "quantity": 1,
         }
         name = "buy_ticket_sold_out_event"
-        with self.client.post(
-            "/buy-ticket", json=payload, catch_response=True, name=name
-        ) as resp:
+        with self.client.post("/buy-ticket", json=payload, catch_response=True, name=name) as resp:
             if resp.status_code in (202, 409, 404):
                 resp.success()
             else:
-                resp.failure(
-                    f"Sold-out test unexpected status {resp.status_code}: {resp.text}"
-                )
+                resp.failure(f"Sold-out test unexpected status {resp.status_code}: {resp.text}")
 
     @task(weight=3)
     def buy_ticket_invalid_payload(self):
@@ -140,12 +126,8 @@ class FlashSaleUser(HttpUser):
             "quantity": 0,
         }
         name = "buy_ticket_invalid_payload"
-        with self.client.post(
-            "/buy-ticket", json=payload, catch_response=True, name=name
-        ) as resp:
+        with self.client.post("/buy-ticket", json=payload, catch_response=True, name=name) as resp:
             if resp.status_code == 422:
                 resp.success()
             else:
-                resp.failure(
-                    f"Invalid payload test unexpected status {resp.status_code}: {resp.text}"
-                )
+                resp.failure(f"Invalid payload test unexpected status {resp.status_code}: {resp.text}")

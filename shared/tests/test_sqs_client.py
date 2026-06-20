@@ -104,9 +104,7 @@ class TestSendFifoMessage:
 
     def test_no_retry_on_non_retryable_error(self, mock_sqs_client, sample_event):
         error_response = {"Error": {"Code": "InvalidParameterValue", "Message": "Bad param"}}
-        mock_sqs_client.send_message.side_effect = ClientError(
-            error_response, "SendMessage"
-        )
+        mock_sqs_client.send_message.side_effect = ClientError(error_response, "SendMessage")
 
         with pytest.raises(ClientError) as exc_info:
             send_fifo_message(
@@ -122,9 +120,7 @@ class TestSendFifoMessage:
 
     def test_max_retries_exceeded(self, mock_sqs_client, sample_event):
         error_response = {"Error": {"Code": "ThrottlingException", "Message": "Rate exceeded"}}
-        mock_sqs_client.send_message.side_effect = ClientError(
-            error_response, "SendMessage"
-        )
+        mock_sqs_client.send_message.side_effect = ClientError(error_response, "SendMessage")
 
         with patch("shared.sqs_client.time.sleep"), pytest.raises(ClientError):
             send_fifo_message(

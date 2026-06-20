@@ -66,18 +66,17 @@ def mock_settings():
 
 @pytest.fixture
 def mock_db_connection():
-    with patch("payment.handler.get_connection") as mock_get, patch(
-        "payment.handler.release_connection"
-    ) as mock_release:
+    with (
+        patch("payment.handler.get_connection") as mock_get,
+        patch("payment.handler.release_connection") as mock_release,
+    ):
         mock_conn = MagicMock()
         mock_get.return_value = mock_conn
         yield mock_conn, mock_get, mock_release
 
 
 class TestPaymentHandler:
-    def test_routes_process_payment(
-        self, mock_context, mock_settings, mock_db_connection, mock_sqs_client=None
-    ):
+    def test_routes_process_payment(self, mock_context, mock_settings, mock_db_connection, mock_sqs_client=None):
         conn, mock_get, mock_release = mock_db_connection
         body = _valid_process_payment_body()
 
@@ -91,9 +90,7 @@ class TestPaymentHandler:
         mock_proc.assert_called_once()
         mock_release.assert_called_once_with(conn, mock_settings.DATABASE_URL)
 
-    def test_routes_inventory_failed(
-        self, mock_context, mock_settings, mock_db_connection
-    ):
+    def test_routes_inventory_failed(self, mock_context, mock_settings, mock_db_connection):
         conn, mock_get, mock_release = mock_db_connection
         body = _valid_inventory_failed_body()
 
@@ -106,9 +103,7 @@ class TestPaymentHandler:
         assert result == {"batchItemFailures": []}
         mock_rb.assert_called_once()
 
-    def test_poison_message_invalid_json_does_not_retry(
-        self, mock_context, mock_settings, mock_db_connection
-    ):
+    def test_poison_message_invalid_json_does_not_retry(self, mock_context, mock_settings, mock_db_connection):
         result = lambda_handler(
             {"Records": [{"messageId": "msg-poison", "body": "not-json{"}]},
             mock_context,
@@ -116,9 +111,7 @@ class TestPaymentHandler:
 
         assert result == {"batchItemFailures": []}
 
-    def test_unknown_event_type_does_not_retry(
-        self, mock_context, mock_settings, mock_db_connection
-    ):
+    def test_unknown_event_type_does_not_retry(self, mock_context, mock_settings, mock_db_connection):
         body = json.dumps({"event_type": "UnknownEvent", "version": "1.0"})
 
         result = lambda_handler(
@@ -128,9 +121,7 @@ class TestPaymentHandler:
 
         assert result == {"batchItemFailures": []}
 
-    def test_processing_exception_adds_to_batch_failures(
-        self, mock_context, mock_settings, mock_db_connection
-    ):
+    def test_processing_exception_adds_to_batch_failures(self, mock_context, mock_settings, mock_db_connection):
         body = _valid_process_payment_body()
 
         with patch("payment.handler.process_payment", side_effect=Exception("DB down")):

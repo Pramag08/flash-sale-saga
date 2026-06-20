@@ -21,9 +21,7 @@ def _reservation_item(status="RESERVED", reserved_at=None, **overrides) -> dict:
 class TestGetSagaStatus:
     def test_reservation_found(self, client, mock_table):
         txn_id = uuid.uuid4()
-        mock_table.get_item.return_value = {
-            "Item": _reservation_item(status="RESERVED")
-        }
+        mock_table.get_item.return_value = {"Item": _reservation_item(status="RESERVED")}
 
         response = client.get(f"/status/{txn_id}")
 
@@ -37,9 +35,7 @@ class TestGetSagaStatus:
 
     def test_confirmed_status(self, client, mock_table):
         txn_id = uuid.uuid4()
-        mock_table.get_item.return_value = {
-            "Item": _reservation_item(status="CONFIRMED")
-        }
+        mock_table.get_item.return_value = {"Item": _reservation_item(status="CONFIRMED")}
 
         response = client.get(f"/status/{txn_id}")
 
@@ -49,9 +45,7 @@ class TestGetSagaStatus:
 
     def test_cancelled_status(self, client, mock_table):
         txn_id = uuid.uuid4()
-        mock_table.get_item.return_value = {
-            "Item": _reservation_item(status="CANCELLED")
-        }
+        mock_table.get_item.return_value = {"Item": _reservation_item(status="CANCELLED")}
 
         response = client.get(f"/status/{txn_id}")
 
@@ -70,9 +64,7 @@ class TestGetSagaStatus:
     def test_timed_out_reservation(self, client, mock_table):
         txn_id = uuid.uuid4()
         old_time = (datetime.now(UTC) - timedelta(minutes=15)).isoformat()
-        mock_table.get_item.return_value = {
-            "Item": _reservation_item(status="RESERVED", reserved_at=old_time)
-        }
+        mock_table.get_item.return_value = {"Item": _reservation_item(status="RESERVED", reserved_at=old_time)}
 
         response = client.get(f"/status/{txn_id}")
 
@@ -83,9 +75,7 @@ class TestGetSagaStatus:
     def test_recent_reservation_not_timed_out(self, client, mock_table):
         txn_id = uuid.uuid4()
         recent_time = (datetime.now(UTC) - timedelta(minutes=5)).isoformat()
-        mock_table.get_item.return_value = {
-            "Item": _reservation_item(status="RESERVED", reserved_at=recent_time)
-        }
+        mock_table.get_item.return_value = {"Item": _reservation_item(status="RESERVED", reserved_at=recent_time)}
 
         response = client.get(f"/status/{txn_id}")
 

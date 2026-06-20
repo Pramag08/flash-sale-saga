@@ -53,9 +53,7 @@ def _valid_payment_success_body(**overrides) -> dict:
 
 
 class TestInventoryHandler:
-    def test_poison_message_invalid_json_does_not_crash(
-        self, mock_context, mock_settings, mock_dynamodb_client
-    ):
+    def test_poison_message_invalid_json_does_not_crash(self, mock_context, mock_settings, mock_dynamodb_client):
         result = lambda_handler(
             {"Records": [{"messageId": "msg-poison", "body": "not-json{"}]},
             mock_context,
@@ -64,9 +62,7 @@ class TestInventoryHandler:
         assert result == {"batchItemFailures": []}
         mock_dynamodb_client.get_reservation.assert_not_called()
 
-    def test_valid_message_processes_successfully(
-        self, mock_context, mock_settings, mock_dynamodb_client
-    ):
+    def test_valid_message_processes_successfully(self, mock_context, mock_settings, mock_dynamodb_client):
         mock_dynamodb_client.get_reservation.return_value = None
         mock_dynamodb_client.get_event_metadata.return_value = {"sale_status": "ACTIVE"}
         mock_dynamodb_client.conditional_decrement.return_value = True
@@ -85,9 +81,7 @@ class TestInventoryHandler:
         assert result == {"batchItemFailures": []}
         mock_reserve.assert_called_once()
 
-    def test_processing_exception_adds_to_batch_failures(
-        self, mock_context, mock_settings, mock_dynamodb_client
-    ):
+    def test_processing_exception_adds_to_batch_failures(self, mock_context, mock_settings, mock_dynamodb_client):
         body = _valid_payment_success_body()
 
         with patch("inventory.handler.reserve_ticket", side_effect=Exception("DynamoDB down")):
