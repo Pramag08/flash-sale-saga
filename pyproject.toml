@@ -1,0 +1,35 @@
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = [
+    "--import-mode=importlib",
+    "-p", "no:warnings",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning:starlette.*",
+]
+testpaths = [
+    "shared",
+    "payment",
+    "inventory",
+    "saga_initiator",
+]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+exclude = [".venv", "frontend", ".git", "__pycache__", "node_modules"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "A", "SIM"]
+ignore = ["A003"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.mypy]
+python_version = "3.12"
+ignore_missing_imports = true
+check_untyped_defs = true
+explicit_package_bases = true
+exclude = ["\\.venv", "frontend"]

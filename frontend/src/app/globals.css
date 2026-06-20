@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg: 255 255 255;
+    --fg: 15 23 42;
+    --card: 248 250 252;
+    --border: 226 232 240;
+    --muted: 100 116 139;
+  }
+
+  .dark {
+    --bg: 15 23 42;
+    --fg: 248 250 252;
+    --card: 30 41 59;
+    --border: 51 65 85;
+    --muted: 148 163 184;
+  }
+}
+
+body {
+  background: rgb(var(--bg));
+  color: rgb(var(--fg));
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+@layer components {
+  .card {
+    background: rgb(var(--card));
+    border: 1px solid rgb(var(--border));
+    border-radius: 0.75rem;
+    transition: box-shadow 0.2s;
+  }
+  .card:hover {
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+  }
+}

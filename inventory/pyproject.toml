@@ -1,0 +1,17 @@
+[project]
+name = "flash-sale-inventory"
+version = "0.1.0"
+description = "Inventory service for Flash Sale Saga"
+requires-python = ">=3.12"
+dependencies = [
+    "flash-sale-shared",
+    "boto3>=1.28",
+    "pydantic>=2.0",
+]
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["inventory*"]

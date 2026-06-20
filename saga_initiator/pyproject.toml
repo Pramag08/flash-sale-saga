@@ -1,0 +1,19 @@
+[project]
+name = "flash-sale-saga-initiator"
+version = "0.1.0"
+description = "Saga Initiator API service for Flash Sale Saga"
+requires-python = ">=3.12"
+dependencies = [
+    "flash-sale-shared",
+    "fastapi>=0.100",
+    "mangum>=0.17",
+    "boto3>=1.28",
+    "pydantic>=2.0",
+]
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["saga_initiator*"]
